@@ -103,6 +103,7 @@ preliminary () {
                 		fi
 	
 		fi
+		# May cut this one out, or find a way to pair with conflict accts, or only display if NOT paired with any conflicted accounts
 		if [[ -f $path/full-migration/preliminary/domain_conflicts ]]; then
 				clear
                                 export text1="################## Initial Migration To Destination Server ###################"
@@ -440,7 +441,22 @@ homedirs () {
         export text2="Copying Over Home Directories ..."
         $path/full-migration/menu_templates/submenu.sh
         sleep 2
-	for each in `\ls -A /var/cpanel/users`;do rsync -avHl -e "ssh -p $destinationPORT" /home/$each/ $destinationUSER@$destinationIP:/home/$each/ --progress;done
+	# No conflicts, rsync all homedirs
+	if [[ -z $path/full-migration/preliminary/user_conflicts ]]; then
+		for each in `\ls -A /var/cpanel/users`;do rsync -avHl -e "ssh -p $destinationPORT" /home/$each/ $destinationUSER@$destinationIP:/home/$each/ --progress;done
+	else
+                # Grab choice set earlier by tech in preliminary function
+                override=$(cat $path/full-migration/preliminary/conflict_override)
+                # If there are conflicts recorded, and tech did not set override, then rsync homedirs with conflict accounts excluded
+                if [[ -n $path/full-migration/preliminary/user_conflicts ]] && [[ override != $override ]]; then
+			for each in `cat $path/full-migration/preliminary/userlist_exclude`;do rsync -avHl -e "ssh -p $destinationPORT" /home/$each/ $destinationUSER@$destinationIP:/home/$each/ --progress;done
+		else
+			# If tech decided to override, rsync all homedirs
+			if [[ $override == override ]]; then
+				for each in `\ls -A /var/cpanel/users`;do rsync -avHl -e "ssh -p $destinationPORT" /home/$each/ $destinationUSER@$destinationIP:/home/$each/ --progress;done
+			fi
+		fi
+	fi
 	echo
 	echo
 	echo "Home directories have finished copying"
