@@ -80,7 +80,28 @@ preliminary () {
 				echo
 				cat $path/full-migration/preliminary/user_conflicts
 				echo
-        			read -p "Press any key to continue..."
+				echo "By default, these domains will be excluded from the initial migration."
+				echo "If you would to continue, press any key. If you would like to instead"
+				echo "override this, type 'no'."
+				echo
+				echo -n "Press any key, or type 'no':"
+				# Allow admin to override.
+        		        if [ -z $conflict_continue ]; then
+                        		echo -n "Press any key to continue, or type 'no':"
+                        		read conflict_continue
+                			if [ -z $conflict_continue ]; then
+                        			echo 
+                        			echo "Listed accounts will be excluded from initial migration."
+                        			sleep 2
+					fi
+					if [ $conflict_continue == no ];then
+						cat "override" > $path/full-migration/preliminary/conflict_override
+						echo
+						echo "Override completed. Script will attempt to move all accounts"
+						echo "on the server regardless of found conflicts."
+					fi
+                		fi
+	
 		fi
 		if [[ -f $path/full-migration/preliminary/domain_conflicts ]]; then
 				clear
@@ -105,6 +126,7 @@ preliminary () {
 		echo
 		cat $path/full-migration/preliminary/users
 		echo
+		read -p "Press any key to continue ..."
 		# Give choice to match configs or not. Write choice to file. Make EA matcher check this file before starting
 	fi
 	
@@ -309,10 +331,40 @@ package () {
 	# Move any existing cpmove files in /home out of the way
 	if [[ -f /home/cpmove-*.tar ]]; then
 		mkdir /home/old-cpmove
-		for each in `ls /home|egrep 'cpmove.*tar$'|cut -d '-' -f2|cut -d '.' -f1`;do mv /home/cpmove-$each.tar /home/old-cpmove/;done
+		for each in `\ls /home|egrep 'cpmove.*tar$'|cut -d '-' -f2|cut -d '.' -f1`;do mv /home/cpmove-$each.tar /home/old-cpmove/;done
 	fi
 	# Package accounts
-	for each in `ls -A1 /var/cpanel/users/`;do /scripts/pkgacct --skiphomedir --nocompress $each /home cpmove 2>&1|tee $path/full-migration/scripts/logs/pkgacct.log;done
+	# If no conflicts, package all accounts
+	if [[ -z $path/full-migration/preliminary/user_conflicts ]]; then
+		for each in `\ls -A1 /var/cpanel/users/`;do /scripts/pkgacct --skiphomedir --nocompress $each /home cpmove 2>&1|tee $path/full-migration/scripts/logs/pkgacct.log;done
+	else
+		# Grab choice set earlier by tech in preliminary function
+		override=$(cat $path/full-migration/preliminary/conflict_override)
+		# If there are conflicts recorded, and tech did not set override, then make list exluding users with conflicts.
+		if [[ -n $path/full-migration/preliminary/user_conflicts ]] && [[ override != $override ]]; then 
+			# Make list excluding user conflicts
+			echo
+			echo "Creating user list excluding accounts with conflicts ..."
+			for each in `\ls -A1 /var/cpanel/users`; do
+				conflict=$(cat $path/full-migration/preliminary/user_conflicts|grep $each)
+				if [[ $each == $conflict ]]; then
+					echo
+					echo "Account $each will not be included in the initial migration"
+				else
+					echo $each >> $path/full-migration/preliminary/userlist_exclude
+					echo
+					echo "Account $each added to initial migration list"
+				fi
+			done
+			# Package accounts using created list
+			for each in `cat $path/full-migration/preliminary/userlist_exclude`;do /scripts/pkgacct --skiphomedir --nocompress $each /home cpmove 2>&1|tee $path/full-migration/scripts/logs/pkgacct.log;done
+		else
+			# Tech did override, package all accounts
+			if [[ $override == override ]]; then
+				for each in `\ls -A1 /var/cpanel/users/`;do /scripts/pkgacct --skiphomedir --nocompress $each /home cpmove 2>&1|tee $path/full-migration/scripts/logs/pkgacct.log;done
+			fi
+		fi
+	fi
 	# Inform admin
 	echo
 	echo
