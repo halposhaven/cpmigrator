@@ -1,11 +1,12 @@
 #!/bin/bash
 
-clear
 unalias ls 2> /dev/null
 path=`pwd`
 
 # This script needs to be run as a root user. This is a check to make sure of that.
 if [[ $EUID -ne 0 ]]; then
+	clear
+	for each in text{1..6};do unset $each;done
 	export text1="This script must be run as the root user. Please switch to the root user,"
 	export text2="and then restart this script."
 	$path/full-migration/menu_templates/submenu.sh
@@ -18,6 +19,8 @@ expect_workstation=$(dpkg --get-selections 2> /dev/null|awk '/expect/{print $1}'
 expect_centos=$(rpm -qa 2> /dev/null|awk '/expect/{print $1}'|cut -d '-' -f1|head -1)
 # May want to work in an override here, as all scenarios probably won't be accounted for
 if [[ -z $expect_workstation ]] && [[ -z $expect_centos ]]; then
+	clear
+	for each in text{1..6};do unset $each;done
 	export text1="This script requires the use of the 'expect' package. Please install before"
 	export text2="continuing forward."
 	$path/full-migration/menu_templates/submenu.sh
@@ -25,6 +28,7 @@ if [[ -z $expect_workstation ]] && [[ -z $expect_centos ]]; then
 fi 
 
 menuoptions () {
+	clear
 	export text1="What Type Of Migration Is This? (Please Choose From The Options Below)"
 	export text2="1) Full Migration (All Accounts) Cpanel To Cpanel, With Root SSH Access"
 	export text3="2) Partial Migration (List Of Accounts) Cpanel To Cpanel, With Root SSH Access"

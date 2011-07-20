@@ -2,7 +2,6 @@
 # This script is initiated from init.sh
 # It is the first script run from there as part of a full migration
 
-clear
 path=`pwd`
 
 # Clear flat files written to in this script
@@ -12,6 +11,8 @@ cat /dev/null > $path/full-migration/sourceIPtest
 cat /dev/null > $path/full-migration/destinationIPtest
 
 # Inform tech to fill out migration information for source server
+	clear
+	for each in text{1..6};do unset $each;done
 	export text1="Please Fill Out The Following Migration Details"
 	export text2="1) Source Server IP Address"
 	export text3="2) Source Server SSH Port"             
@@ -92,6 +93,7 @@ sleep 2
 
 # Inform tech to fill out migration information for destination server
 	clear
+	for each in text{1..6};do unset $each;done
 	export text1="Please Fill Out The Following Migration Details"
 	export text2="1) Destination Server IP Address"
 	export text3="2) Destination Server SSH Port"
