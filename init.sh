@@ -52,6 +52,8 @@ case $STATUS in
 	$path/full-migration/server-locations.sh
 	$path/full-migration/ssh-keys.sh
 	$path/full-migration/starter.sh
+	$path/full-migration/wait.sh
+	$path/full-migration/final-sync.sh
 	echo "Script complete"
 ;;
 
