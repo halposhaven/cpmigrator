@@ -212,7 +212,7 @@ ttls () {
  	#check your work
 	grep --color -e '^\$TTL.*' -e '[0-9]\{10\}' /var/named/*.db
 	# Handles individually set TTLs for records, which are most commonly at 14400
-	grep 14400 *.db -Rl | xargs sed -i.lwbak 's/14400/300/g'
+	grep 14400 /var/named/*.db -Rl|xargs sed -i 's/14400/300/g'
 	rndc reload
 	echo
 	echo "TTLs Lowered"
