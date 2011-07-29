@@ -508,6 +508,8 @@ EOF
 		 Press any key to continue..."	
 }
 
+# Need a check on the number of accounts, to verify that at least they all restored
+
 source ~/.bash_profile 2>&1 >/dev/null
 
 # Options menu using dialog (ncurses utility for bash)
