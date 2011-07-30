@@ -4,6 +4,9 @@ unalias ls 2> /dev/null
 
 path=`pwd`
 
+unsetter=$(for each in text{1..6};do unset $each;done;clear)
+submenu=$($path/full-migration/menu_templates/submenu.sh;sleep 2)
+
 # Set destination server variables
 destinationIP=$(cat $path/full-migration/destination-files/destinationIP)
 destinationPASS=$(cat $path/full-migration/destination-files/destinationPASS)
@@ -12,11 +15,9 @@ destinationUSER=$(cat $path/full-migration/destination-files/destinationUSER)
 
 disable_services (){
 	# Turn off services on source server
-	for each in text{1..6};do unset $each;done
-	clear
+	unsetter
 	export text1="Temporarily disabling services on source server ..."
-	$path/full-migration/menu_templates/submenu.sh
-	sleep 2
+	submenu
 	/usr/local/cpanel/bin/tailwatchd --disable=Cpanel::TailWatch::ChkServd
 	/etc/init.d/httpd stop
 	/etc/init.d/exim stop
@@ -24,22 +25,18 @@ disable_services (){
 }
 
 databases () {
-	# Will need to have an option to handle users that didn't originally copy (caught by the 'preliminary' function
+	# Will need to have an option to handle users that didn't originally copy (caught by the 'preliminary' function)
 	# Dump the databases
-	for each in text{1..6};do unset $each;done
-	clear
+	unsetter
 	export text1="Dumping the databases to /home/dbdumps ..."
-	$path/full-migration/menu_templates/submenu.sh
-	sleep 2
+	submenu
 	test -d /home/dbdumps && mv /home/dbdumps{,.`date +%F`.bak}
 	mkdir /home/dbdumps
 	for db in `mysql -Ns -e "show databases"|egrep -v "test|information_schema|cphulkd|eximstats|horde|leechprotect|modsec|mysql|roundcube|^test$"`;do echo $db;mysqldump $db > /home/dbdumps/$db.sql;done
 	# Copy the databases
-	for each in text{1..6};do unset $each;done
-	clear
+	unsetter
 	export text1="Copying the database dumps to the destination server ..."
-	$path/full-migration/menu_templates/submenu.sh
-	sleep 2
+	submenu
 	ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
 test -d /home/dbdumps && mv /home/dbdumps{,.`date +%F`.bak}
 EOF
@@ -47,11 +44,9 @@ EOF
 }
 
 restore_dbs () {
-        for each in text{1..6};do unset $each;done
-        clear
+        unsetter
         export text1="Starting a restore of the databases ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
         ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
 cd /home/dbdumps
 test -d /home/prefinalsyncdbs && mv /home/prefinalsyncdbs{,.`date +%F`.bak}
@@ -63,22 +58,18 @@ EOF
 
 homedirs () {
 	# This needs to either split into a separate process, or run in another screen session, so the databases can be restored while this is running
-	for each in text{1..6};do unset $each;done
-	clear
+	unsetter
 	export text1="Rsyncing the homedirs ..."
-	$path/full-migration/menu_templates/submenu.sh
-	sleep 2
+	submenu
 	for each in `\ls -A /var/cpanel/users`;do rsync -avHP -e 'ssh -pdestinationPORT' /home/$each/ root@$destinationIP:/home/$each/ --update;done
 	rsync -avHP -e 'ssh -p$destinationPORT' /usr/local/cpanel/3rdparty/mailman root@$destinationIP:/usr/local/cpanel/3rdparty/
 	rsync -avHP -e 'ssh -pdestinationPORT' /var/spool root@$destinationIP:/var/
 }
 
 db_check () {
-        clear
-        for each in text{1..6};do unset $each;done
+        unsetter
         export text1="Checking to see if databases have finished restoring ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
         rsync -avHl -e "ssh -p $destinationPORT" $path/full-migration/scripts/db-watcher.sh $destinationUSER@$destinationIP:/home/temp/ --progress
         ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
 /home/temp/db-watcher.sh
@@ -89,10 +80,9 @@ EOF
 }
 
 forward () {
-	clear
-	for each in text{1..6};do unset $each;done
+	unsetter
 	export text1="Setting up DNS forwarding ..."
-	$path/full-migration/menu_templates/submenu.sh
+	submenu
 	/etc/init.d/named stop
 	mv /var/named{,.`date +%H%M`.bak}
 	mkdir /var/named
@@ -103,10 +93,9 @@ forward () {
 }
 
 remove_dumps () {
-	clear
-	for each in text{1..6};do unset $each;done
+	unsetter
 	export text1="Removing Mysql dumps ..."
-	$path/full-migration/menu_templates/submenu.sh
+	submenu
 	rm -f /home/dbdumps/*
 	rmdir /home/dbdumps
 ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
@@ -116,10 +105,9 @@ EOF
 }
 
 restart_services () {
-	clear
-	for each in text{1..6};do unset $each;done
+	unsetter
 	export text1="Restarting services ..."
-	$path/full-migration/menu_templates/submenu.sh
+	submenu
 	/etc/init.d/cpanel start
 	/etc/init.d/exim start
 	/etc/init.d/httpd start
