@@ -25,3 +25,5 @@ full-migration/scripts/logs/cpmove.log
 full-migration/scripts/logs/pkgacct.log
 full-migration/preliminary/userlist_exclude
 full-migration/preliminary/conflict_override
+cleanup.sh
+ignore.txt
