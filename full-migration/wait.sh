@@ -23,6 +23,5 @@ do
 				SUBLOOP=0
 			fi
 		SUBLOOP=0
-		sleep 24h
 	fi
 done
