@@ -316,9 +316,9 @@ match () {
 
 	# Alternate method using yaml files(needs testing)
 	#cp /var/cpanel/easy/apache/profile/_last_success.yaml /var/cpanel/easy/apache/profile/custom/user_custom.yaml
-	#rsync -avHl -e "ssh -p$destinationPORT" $path/full-migration/scripts/easy_apache.sh $destinationUSER@$destinationIP:/home/temp/ --progress
 	#rsync -avHl -e "ssh -p$destinationPORT" /var/cpanel/easy/apache/profile/custom/user_custom.yaml $destinationUSER@$destinationIP:/var/cpanel/easy/apache/profile/custom/ --progress
 	# Starts easy apache in detached screen on destination server 
+	rsync -avHl -e "ssh -p$destinationPORT" $path/full-migration/scripts/easy_apache.sh $destinationUSER@$destinationIP:/home/temp/ --progress
 	ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
 screen -S "easy_apache" -d -m /home/temp/easy_apache.sh
 exit
