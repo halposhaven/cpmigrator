@@ -1,6 +1,6 @@
 # cpMigrator: An automated migration script for cPanel migrations #
 
-_italics_ Info: This script is currently under development, so it is not quite ready for prime time. Updates will be made here as it progresses. 
+_Info: This script is currently under development, so it is not quite ready for prime time. Updates will be made here as it progresses._
 
 ## Current or Intended Abilities
 
@@ -38,7 +38,7 @@ This is the first, and primary function of the script; to handle full migrations
 
 14. Prepares the destination server for testing by providing links the customer can access for hosts file modification and testing.
 
-_italics_ After this point it will wait until it is prompted to complete the final sync, which does a standard final sync, and can setup DNS to forward from the source server to the destination server.
+_After this point it will wait until it is prompted to complete the final sync, which does a standard final sync, and can setup DNS to forward from the source server to the destination server._
 
 ### Partial Migration
 
