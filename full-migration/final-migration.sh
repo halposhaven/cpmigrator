@@ -4,8 +4,15 @@ unalias ls 2> /dev/null
 
 path=`pwd`
 
-unsetter=$(for each in text{1..6};do unset $each;done;clear)
-submenu=$($path/full-migration/menu_templates/submenu.sh;sleep 2)
+# Menu functions. Used whenever a menu is displayed to the user
+menu_prep () {
+        for each in text{1..6};do unset $each;done
+        clear
+}
+submenu () {
+	$path/full-migration/menu_templates/submenu.sh
+	sleep 2
+}
 
 # Set destination server variables
 destinationIP=$(cat $path/full-migration/destination-files/destinationIP)
@@ -15,7 +22,7 @@ destinationUSER=$(cat $path/full-migration/destination-files/destinationUSER)
 
 disable_services (){
 	# Turn off services on source server
-	unsetter
+	menu_prep
 	export text1="Temporarily disabling services on source server ..."
 	submenu
 	/usr/local/cpanel/bin/tailwatchd --disable=Cpanel::TailWatch::ChkServd
@@ -27,14 +34,14 @@ disable_services (){
 databases () {
 	# Will need to have an option to handle users that didn't originally copy (caught by the 'preliminary' function)
 	# Dump the databases
-	unsetter
+	menu_prep
 	export text1="Dumping the databases to /home/dbdumps ..."
 	submenu
 	test -d /home/dbdumps && mv /home/dbdumps{,.`date +%F`.bak}
 	mkdir /home/dbdumps
 	for db in `mysql -Ns -e "show databases"|egrep -v "test|information_schema|cphulkd|eximstats|horde|leechprotect|modsec|mysql|roundcube|^test$"`;do echo $db;mysqldump $db > /home/dbdumps/$db.sql;done
 	# Copy the databases
-	unsetter
+	menu_prep
 	export text1="Copying the database dumps to the destination server ..."
 	submenu
 	ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
@@ -44,7 +51,7 @@ EOF
 }
 
 restore_dbs () {
-        unsetter
+        menu_prep
         export text1="Starting a restore of the databases ..."
         submenu
         ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
@@ -58,7 +65,7 @@ EOF
 
 homedirs () {
 	# This needs to either split into a separate process, or run in another screen session, so the databases can be restored while this is running
-	unsetter
+	menu_prep
 	export text1="Rsyncing the homedirs ..."
 	submenu
 	for each in `\ls -A /var/cpanel/users`;do rsync -avHP -e 'ssh -pdestinationPORT' /home/$each/ root@$destinationIP:/home/$each/ --update;done
@@ -67,7 +74,7 @@ homedirs () {
 }
 
 db_check () {
-        unsetter
+        menu_prep
         export text1="Checking to see if databases have finished restoring ..."
         submenu
         rsync -avHl -e "ssh -p $destinationPORT" $path/full-migration/scripts/db-watcher.sh $destinationUSER@$destinationIP:/home/temp/ --progress
@@ -80,7 +87,7 @@ EOF
 }
 
 forward () {
-	unsetter
+	menu_prep
 	export text1="Setting up DNS forwarding ..."
 	submenu
 	/etc/init.d/named stop
@@ -93,7 +100,7 @@ forward () {
 }
 
 remove_dumps () {
-	unsetter
+	menu_prep
 	export text1="Removing Mysql dumps ..."
 	submenu
 	rm -f /home/dbdumps/*
@@ -105,7 +112,7 @@ EOF
 }
 
 restart_services () {
-	unsetter
+	menu_prep
 	export text1="Restarting services ..."
 	submenu
 	/etc/init.d/cpanel start

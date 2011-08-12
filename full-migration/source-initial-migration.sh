@@ -2,6 +2,10 @@
 # Initiated from starter.sh
 
 path=`pwd`
+menu_prep () {
+        for each in text{1..6};do unset $each;done
+        clear
+}
 
 # Set destination server variables
 destinationIP=$(cat $path/full-migration/destination-files/destinationIP)
@@ -11,8 +15,7 @@ destinationUSER=$(cat $path/full-migration/destination-files/destinationUSER)
 
 # Provide some basic information about the current status of the server
 system_info () {
-	clear
-	for each in text{1..6};do unset $each;done
+	menu_prep
 	export text1="################## Initial Migration To Destination Server ###################"
 	export text2="Begin System Information ..."
 	export text3="The following information will also be logged to:"
@@ -50,8 +53,7 @@ preliminary () {
 	[ -f $path/full-migration/preliminary/domain_conflicts ] && rm -f $path/full-migration/preliminary/domain_conflicts
 	for each in `\ls -A1 $path/full-migration/preliminary`; do cat /dev/null > $path/full-migration/preliminary/$each 2>&1 >/dev/tty;done
         
-	clear
-	for each in text{1..6};do unset $each;done
+	menu_prep
 	export text1="################## Initial Migration To Destination Server ###################"
 	export text2="Begin Preliminary Migration Checks For ..."
 	export text3="-Cpanel User Accounts On the Destination Server"
@@ -73,8 +75,7 @@ preliminary () {
 		for each in `cat $path/full-migration/preliminary/domains`;do `cat /etc/userdatadomains|cut -d ':' -f1|grep -x $each|uniq -ui >> $path/full-migration/preliminary/domain_conflicts`;done
 		# If there are conflicts, inform the admin
 		if [[ -f $path/full-migration/preliminary/user_conflicts ]]; then
-			        clear
-				for each in text{1..6};do unset $each;done
+			        menu_prep
         			export text1="################## Initial Migration To Destination Server ###################"
         			export text2="ATTENTION: The following accounts already exist on the target server."
         			$path/full-migration/menu_templates/submenu.sh
@@ -107,8 +108,7 @@ preliminary () {
 		fi
 		# May cut this one out, or find a way to pair with conflict accts, or only display if NOT paired with any conflicted accounts
 		if [[ -f $path/full-migration/preliminary/domain_conflicts ]]; then
-				clear
-				for each in text{1..6};do unset $each;done
+				menu_prep
                                 export text1="################## Initial Migration To Destination Server ###################"
                                 export text2="ATTENTION: The following domains already exist on the target server."
                                 $path/full-migration/menu_templates/submenu.sh
@@ -121,8 +121,7 @@ preliminary () {
 		fi
 	else
 		# No conflicts, but accounts do exist on target server. Inform admin.
-		clear
-		for each in text{1..6};do unset $each;done
+		menu_prep
                 export text1="################## Initial Migration To Destination Server ###################"
                 export text2="ATTENTION: The target server is in use, and the following accounts are setup."
                 $path/full-migration/menu_templates/submenu.sh
@@ -155,8 +154,7 @@ preliminary () {
 	# If there are not enough, inform the admin, along with how many IPs are needed
 	if [[ $target_ips -lt $ips_needed ]]; then
 		add_ips=$(($ips_needed - $target_ips))
-		clear
-		for each in text{1..6};do unset $each;done
+		menu_prep
                 export text1="################## Initial Migration To Destination Server ###################"
                 export text2="ATTENTION: The target server does not have enough IPs for accounts with" 
 		export text3="           dedicated IPs."
@@ -185,8 +183,7 @@ preliminary () {
 			echo "Yes" >> $path/full-migration/preliminary/restore_to_shared
 		fi
 	else
-		clear
-		for each in text{1..6};do unset $each;done
+		menu_prep
                 export text1="################## Initial Migration To Destination Server ###################"
                 export text2="The target server has enough IPs to keep the current IP configuration."
                 $path/full-migration/menu_templates/submenu.sh
@@ -197,8 +194,7 @@ preliminary () {
 
 # Lowers TTLs. Snagged from migration wiki
 ttls () {
-        clear
-	for each in text{1..6};do unset $each;done
+        menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Now Lowering TTLs ..."
         $path/full-migration/menu_templates/submenu.sh
@@ -220,8 +216,7 @@ ttls () {
 
 # Checks for remote nameservers. Snagged from migration wiki
 nameservers () {
-        clear
-	for each in text{1..6};do unset $each;done
+        menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Checking For Remote Nameservers ..."
         $path/full-migration/menu_templates/submenu.sh
@@ -250,8 +245,7 @@ nameservers () {
 	done
 	# If remote nameservers are found, inform admin
 	if [[ -f $path/full-migration/remote_dns ]]; then
-	        clear
-		for each in text{1..6};do unset $each;done
+	        menu_prep
         	export text1="################## Initial Migration To Destination Server ###################"
         	export text2="The Following Domains Are Using Remote Nameservers:"
         	$path/full-migration/menu_templates/submenu.sh
@@ -269,8 +263,7 @@ nameservers () {
 
 # Optional update for rsync. (borrowed from eugene's script for now)
 rsync_update () {
-	clear
-	for each in text{1..6};do unset $each;done
+	menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Updating Rsync ..."
         $path/full-migration/menu_templates/submenu.sh
@@ -303,8 +296,7 @@ versions () {
 
 # Copies over EA configuration, cpanel packages and features
 match () {
-        clear
-	for each in text{1..6};do unset $each;done
+        menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Matching EA Config, Cpanel Packages and Features ..."
         $path/full-migration/menu_templates/submenu.sh
@@ -335,8 +327,7 @@ EOF
 
 # Package up cpanel accounts
 package () {
-        clear
-	for each in text{1..6};do unset $each;done
+        menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Packaging Accounts ..."
         $path/full-migration/menu_templates/submenu.sh
@@ -388,8 +379,7 @@ package () {
 
 # Copy the cpmove files to the destination server
 copy () {
-        clear
-	for each in text{1..6};do unset $each;done
+        menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Copying Cpmove Files to Destination Server ..."
         $path/full-migration/menu_templates/submenu.sh
@@ -404,8 +394,7 @@ copy () {
 
 # Checks status of easy apache started earlier on remote server, and watches until complete (if still running)
 easyapache () {
-        clear
-	for each in text{1..6};do unset $each;done
+        menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Checking to See If EA is Finished on Destination Server ..."
         $path/full-migration/menu_templates/submenu.sh
@@ -427,8 +416,7 @@ EOF
 
 # Restores Cpmove files on destination server
 restore () {
-        clear
-	for each in text{1..6};do unset $each;done
+        menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Restoring Cpmove Files on Destination Server ..."
         $path/full-migration/menu_templates/submenu.sh
@@ -451,8 +439,7 @@ EOF
 
 # Rsync over the home directories
 homedirs () {
-        clear
-	for each in text{1..6};do unset $each;done
+        menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Copying Over Home Directories ..."
         $path/full-migration/menu_templates/submenu.sh
@@ -481,8 +468,7 @@ homedirs () {
 
 # Sets up the destination server for testing, and provides details to admin
 testing () {
-        clear
-	for each in text{1..6};do unset $each;done
+        menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Preparing Destination Server For Testing Phase ..."
         $path/full-migration/menu_templates/submenu.sh
