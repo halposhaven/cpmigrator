@@ -250,8 +250,16 @@ nameservers () {
         	export text2="The Following Domains Are Using Remote Nameservers:"
         	$path/full-migration/menu_templates/submenu.sh
         	sleep 2
-		for each in `cat $path/full-migration/remote_dns`;do echo "Whois information for $each";whois $each|grep "Name Server:"|tr -d [:blank:];nameserver=$(whois $each|grep "Name Server:"|head -n1|tr -d [:blank:]|cut -d ':' -f2|cut -d ' ' -f2);echo "Dig information for $each @ $nameserver";dig $each @$nameserver|grep $each|grep -vw 'NS'|grep -vw 'ns1'|grep -vw 'ns2'|grep -vw 'DiG'|tail -1;echo;sleep 1;done
-        	cat $path/full-migration/remote_dns
+		for each in `cat $path/full-migration/remote_dns`;do 
+			echo "Whois information for $each"
+			whois $each|grep "Name Server:"|tr -d [:blank:]
+			nameserver=$(whois $each|grep "Name Server:"|head -n1|tr -d [:blank:]|cut -d ':' -f2|cut -d ' ' -f2)
+			echo "Dig information for $each @ $nameserver"
+			dig $each @$nameserver|grep $each|grep -vw 'NS'|grep -vw 'ns1'|grep -vw 'ns2'|grep -vw 'DiG'|tail -1
+			echo
+			sleep 1
+		done
+        	#cat $path/full-migration/remote_dns
         	echo
 		echo
         	read -p "Copy this list of domains to the ticket if necessary. 
