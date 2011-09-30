@@ -181,6 +181,7 @@ preliminary () {
 			echo "Continuing migration, and will restore all accounts to main shared IP."
 			echo
 			echo "Yes" >> $path/full-migration/preliminary/restore_to_shared
+			sleep 2
 		fi
 	else
 		menu_prep
@@ -347,7 +348,8 @@ package () {
 	fi
 	# Package accounts
 	# If no conflicts, package all accounts
-	if [[ -z $path/full-migration/preliminary/user_conflicts ]]; then
+	# Fix this. It's defaulting to the "else", because the if clause is incorrect
+	if [[ -z `cat $path/full-migration/preliminary/user_conflicts` ]]; then
 		for each in `\ls -A1 /var/cpanel/users/`;do /scripts/pkgacct --skiphomedir --nocompress $each /home cpmove 2>&1|tee $path/full-migration/scripts/logs/pkgacct.log;done
 	else
 		# Grab choice set earlier by tech in preliminary function
@@ -485,6 +487,9 @@ testing () {
 	rsync -avHlq -e "ssh -p$destinationPORT" $path/full-migration/scripts/testing-phase.sh $destinationUSER@$destinationIP:/home/temp/
 	ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
 screen -S "testing" -d -m /home/temp/testing-phase.sh
+sleep 10
+[ -f /home/temp/testing_errors.txt ] && cat /home/temp/testing_errors.txt
+read -p "Press any key to continue"
 exit
 EOF
 	# Provide URLs to admin
