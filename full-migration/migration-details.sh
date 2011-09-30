@@ -36,6 +36,7 @@ sourceserverinfo () {
                 # IP is required
 		# This needs more work. If the IP address is invalid, it needs to prompt for a new one
 		# instead of just continuing on
+		# * Needs to go into its own while loop
                 if [ -z $sourceIP ]; then
 			echo ""
                         echo "IP Address Is Required! Please Enter A Valid IP Address."
