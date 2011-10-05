@@ -33,9 +33,9 @@ menuoptions () {
 	menu_prep
 	export text1="What Type Of Migration Is This? (Please Choose From The Options Below)"
 	export text2="1) Full Migration (All Accounts) Cpanel To Cpanel, With Root SSH Access"
-	export text3="2) Partial Migration (List Of Accounts) Cpanel To Cpanel, With Root SSH Access"
-	export text4="3) Single Account Migration (Shared To Shared, Shared To VPS/Dedicated/Storm)"
-	export text5="4) Resume A Migration That Was Already Started"
+	export text3="2) Partial Migration (List Of Accounts) Cpanel To Cpanel, With Root SSH Access (Not available)"
+	export text4="3) Single Account Migration (Shared To Shared, Shared To VPS/Dedicated/Storm) (Not available)"
+	export text5="4) Resume A Migration That Was Already Started (Not available)"
 	export text6="0) Quit"
 	$path/full-migration/menu_templates/submenu.sh
 }
@@ -55,7 +55,7 @@ case $STATUS in
 	$path/full-migration/ssh-keys.sh
 	$path/full-migration/starter.sh
 	$path/full-migration/wait.sh
-	$path/full-migration/final-sync.sh
+	$path/full-migration/final-migration.sh
 	echo "Script complete"
 ;;
 
