@@ -9,9 +9,26 @@ path=`pwd`
 # Clear potentially full flat file
 [ -f $path/full-migration/workstation-check/workstation ] && cat /dev/null > $path/full-migration/workstation-check/workstation
 
+# Functions for menu calls
+menu_prep () {
+        for each in text{1..6};do unset $each;done
+        clear
+}
+submenu () {
+	$path/full-migration/menu_templates/submenu.sh
+	echo
+	sleep 2
+}
+
+# Function for location clear
+location_clear () {
+	cat /dev/null > $path/full-migration/location
+}
+
 # Inform user of current status
-echo "Checking Server Locations ..."
-sleep 2
+menu_prep
+export text1="Checking Server Locations ..."
+submenu
 
 # Set Variables
 ip=$([ -f /var/cpanel/mainip ] && cat /var/cpanel/mainip)
@@ -22,33 +39,30 @@ destinationip=$(cat $path/full-migration/destination-files/destinationIP)
 
 # Checks against source server IP
 if [[ $ip == $sourceip ]]; then
-	echo "This is the source server"
-	echo "Configuring migration for control from source server ..."
+	echo "This is the source server. Configuring migration for control from source server ..."
 	sleep 2 
-	cat /dev/null > $path/full-migration/location
+	location_clear
 	echo "source" > $path/full-migration/location
 fi
 
 # Checks against destination server IP
 if [[ $ip == $destinationip ]]; then
-	echo "This is the destination server" 
-	echo "Configuring migration for control from destination server ..."
+	echo "This is the destination server. Configuring migration for control from destination server ..."
 	sleep 2
-	cat /dev/null > $path/full-migration/location
+	location_clear
 	echo "destination" > $path/full-migration/location
 fi
 
 # If it does not match source or destination IPs, but server is running cpanel,
 # configures migration to be run from a third-party server
 if [[ $ip != $sourceip ]] && [[ $ip != $destinationip ]] && [[ -n $ip ]]; then
-        echo "ATTENTION: This is neither the source or destination servers,"
-        echo "but is running cPanel."
-        echo ""
+        echo "ATTENTION: This is neither the source or destination servers, but is running cPanel."
+        echo
         echo "Configuring migration for control from third party server..."
         echo
-	cat /dev/null > $path/full-migration/location
-	echo "thirdparty" > $path/full-migration/location
 	sleep 2
+	location_clear
+	echo "thirdparty" > $path/full-migration/location
 fi
 
 # If it does not match source or destination IPs, and is not running Cpanel,
@@ -59,6 +73,7 @@ if [[ $ip != $sourceip ]] && [[ $ip != $destinationip ]] && [[ -z $ip ]]; then
 	echo ""
 	echo "Is this a workstation?"
 	echo
+	sleep 2
 	if [ -z $workstation ]; then
                 echo -n "Please type yes or no: "
                 read workstation
@@ -67,7 +82,7 @@ if [[ $ip != $sourceip ]] && [[ $ip != $destinationip ]] && [[ -z $ip ]]; then
 	if [[ $workstation == yes ]]; then
 		echo
 		bash $path/full-migration/workstation-check/workstation-check.sh
-		cat /dev/null $path/full-migration/location
+		location_clear
 		echo "workstation" > $path/full-migration/location
 		echo
 		echo "Configuring migration to run from workstation..."
