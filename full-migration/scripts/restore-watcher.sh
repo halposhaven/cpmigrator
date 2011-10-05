@@ -11,7 +11,7 @@ do
         	date=$(date +"%m-%d-%y.%T")
 		so_far=$(\ls -A1 /var/cpanel/users|wc -l)
 		echo "$so_far out of $total accounts restored. Time: $date"
-        	sleep 60
+        	sleep 15
 	else
 		LOOP=1
 	fi
