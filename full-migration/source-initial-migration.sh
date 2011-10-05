@@ -156,8 +156,7 @@ preliminary () {
 		add_ips=$(($ips_needed - $target_ips))
 		menu_prep
                 export text1="################## Initial Migration To Destination Server ###################"
-                export text2="ATTENTION: The target server does not have enough IPs for accounts with" 
-		export text3="           dedicated IPs."
+                export text2="ATTENTION: The target server does not have enough IPs for accounts with dedicated IPs."
                 $path/full-migration/menu_templates/submenu.sh
 		sleep 2
 		echo "$add_ips IP(s) need to be added to the target server in order to match configurations"
@@ -191,6 +190,10 @@ preliminary () {
                 sleep 2
 	fi
 	# This also needs to take nameservers into account	
+	# Check to make sure there is enough space for the migration (still under development)
+	#total_source_disk_size=$(df -h|grep "/dev/*"|grep "G"|awk '{print $2}')
+	#total_source_disk_usage=$(df -h|grep "/dev/*"|grep "G"|awk '{print $3}')
+		
 }
 
 # Lowers TTLs. Snagged from migration wiki
@@ -349,9 +352,7 @@ package () {
 	# Package accounts
 	# If no conflicts, package all accounts
 	# Fix this. It's defaulting to the "else", because the if clause is incorrect
-	if [[ -z `cat $path/full-migration/preliminary/user_conflicts` ]]; then
-		for each in `\ls -A1 /var/cpanel/users/`;do /scripts/pkgacct --skiphomedir --nocompress $each /home cpmove 2>&1|tee $path/full-migration/scripts/logs/pkgacct.log;done
-	else
+	if [[ -f $path/full-migration/preliminary/user_conflicts ]]; then
 		# Grab choice set earlier by tech in preliminary function
 		override=$(cat $path/full-migration/preliminary/conflict_override)
 		# If there are conflicts recorded, and tech did not set override, then make list exluding users with conflicts.
@@ -378,6 +379,9 @@ package () {
 				for each in `\ls -A1 /var/cpanel/users/`;do /scripts/pkgacct --skiphomedir --nocompress $each /home cpmove 2>&1|tee $path/full-migration/scripts/logs/pkgacct.log;done
 			fi
 		fi
+	else
+		# user_conflicts does not exist, so package all accounts normally
+		for each in `\ls -A1 /var/cpanel/users/`;do /scripts/pkgacct --skiphomedir --nocompress $each /home cpmove 2>&1|tee $path/full-migration/scripts/logs/pkgacct.log;done
 	fi
 	# Inform admin
 	echo
