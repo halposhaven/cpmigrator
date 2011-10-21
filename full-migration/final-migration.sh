@@ -132,7 +132,7 @@ options=(1 "Disable source server services" on    # any option can be set to def
 	 5 "Verify databases have finished restoring" on
          6 "Forward DNS from source server to destination server" on
          7 "Remove database dumps" on
-         8 "Restart source server services" on
+         8 "Restart source server services" on)
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 clear
 for choice in $choices
