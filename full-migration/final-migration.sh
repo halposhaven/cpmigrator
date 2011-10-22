@@ -1,18 +1,7 @@
 #!/bin/bash
 
-unalias ls 2> /dev/null
-
-path=`pwd`
-
-# Menu functions. Used whenever a menu is displayed to the user
-menu_prep () {
-        for each in text{1..6};do unset $each;done
-        clear
-}
-submenu () {
-	$path/full-migration/menu_templates/submenu.sh
-	sleep 2
-}
+# Includes
+source includes.sh
 
 # Set destination server variables
 destinationIP=$(cat $path/full-migration/destination-files/destinationIP)

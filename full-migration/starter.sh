@@ -1,19 +1,12 @@
 #!/bin/bash
 # Initiated from init.sh
 
+# Includes
+source includes.sh
 clear
-path=`pwd`
-location=$(cat $path/full-migration/location)
 
-# Menu functions
-menu_prep () {
-        for each in text{1..6};do unset $each;done
-        clear
-}
-submenu () {
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
-}
+# Set location
+location=$(cat $path/full-migration/location)
 
 # Inform admin of current status
 menu_prep
