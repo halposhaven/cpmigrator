@@ -17,6 +17,16 @@ sourceUSER=$(cat $path/full-migration/source-files/sourceUSER)
 sourcePASS=$(cat $path/full-migration/source-files/sourcePASS)
 sourcePORT=$(cat $path/full-migration/source-files/sourcePORT)
 
+# Menu functions
+menu_prep () {
+        for each in text{1..6};do unset $each;done
+        clear
+}
+submenu () {
+        $path/full-migration/menu_templates/submenu.sh
+        sleep 2
+}
+
 # SSH Keys Setup
 # Credit goes to ehowe for this
 
@@ -75,8 +85,9 @@ sourceserverlogin () {
         echo "$expect_output"
 }
 
-echo"Setting up SSH keys with source server ..."
-sleep 2
+menu_prep
+export text1="Setting up SSH keys with source server ..."
+submenu
 
 # Setup SSH Key
 sshkeys 2>&1 /dev/null
