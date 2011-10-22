@@ -17,6 +17,16 @@ destinationUSER=$(cat $path/full-migration/destination-files/destinationUSER)
 destinationPASS=$(cat $path/full-migration/destination-files/destinationPASS)
 destinationPORT=$(cat $path/full-migration/destination-files/destinationPORT)
 
+# Menu functions
+menu_prep () {
+        for each in text{1..6};do unset $each;done
+        clear
+}
+submenu () {
+        $path/full-migration/menu_templates/submenu.sh
+        sleep 2
+}
+
 # SSH Keys Setup
 # Credit goes to ehowe for this
 
@@ -75,9 +85,9 @@ destserverlogin () {
         echo "$expect_output"
 }
 
-echo
-echo "Setting up SSH key with destination server..."
-sleep 2
+menu_prep
+export text1="Setting up SSH key with destination server..."
+submenu
 
 # Setup SSH Key
 sshkeys 2>&1 /dev/null
