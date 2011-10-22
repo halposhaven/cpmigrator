@@ -6,53 +6,59 @@ clear
 path=`pwd`
 location=$(cat $path/full-migration/location)
 
+# Menu functions
+menu_prep () {
+        for each in text{1..6};do unset $each;done
+        clear
+}
+submenu () {
+        $path/full-migration/menu_templates/submenu.sh
+        sleep 2
+}
+
 # Based on location set by server-locations.sh, 
 # runs appropriate script(s) to setup ssh keys
 
 # If current location is source server 
 if [[ $location == source ]]; then
 	bash $path/full-migration/ssh-dest.sh
-	clear
-	echo
-	echo "SSH Key With Destination Server Has Been Setup"
-	echo
+	menu_prep
+	export text1="SSH Key With Destination Server Has Been Setup"
+	submenu
 fi
 
 # If current location is destination server
 if [[ $location == destination ]]; then
 	bash $path/full-migration/ssh-src.sh
-	clear
-	echo
-	echo "SSH Key With Source Server Has Been Setup"
-	echo
+	menu_prep
+	export text1="SSH Key With Source Server Has Been Setup"
+	submenu
 fi
 
 # If current location is thirdparty server
 if [[ $location == thirdparty ]]; then
 	bash $path/full-migration/ssh-src.sh
 	bash $path/full-migration/ssh-dest.sh
-	clear
-	echo
-	echo "SSH Keys With Source and Destination Servers Have Been Setup"
-	echo
+	menu_prep
+	export text1="SSH Keys With Source and Destination Servers Have Been Setup"
+	submenu
 fi
 
 # If current location is workstation
 if [[ $location == workstation ]]; then
 	bash $path/full-migration/ssh-src.sh
 	bash $path/full-migration/ssh-dest.sh
-        clear
-        echo
-        echo "SSH Keys With Source and Destination Servers Have Been Setup"
-        echo
+        menu_prep
+        export text1="SSH Keys With Source and Destination Servers Have Been Setup"
+        submenu
 fi
 
 # If current location is unkown
 if [[ $location != source ]] && [[ $location != destination ]] && [[ $location != workstation ]]; then
-	echo
-	echo "Unkown location: $location . Exiting script..."
+	menu_prep
+	export text1="Unkown location: $location . Exiting script..."
+	submenu
 	exit 0
 fi
 
-sleep 3
 # Script End. Returns to init.sh
