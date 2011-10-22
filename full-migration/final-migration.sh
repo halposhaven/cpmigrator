@@ -36,18 +36,18 @@ databases () {
 	ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
 test -d /home/dbdumps && mv /home/dbdumps{,.`date +%F`.bak}
 EOF
-	rsync -avHP -e 'ssh -p$destinationPORT' /home/dbdumps root@$destinationIP:/home/
+	rsync -avHP -e "ssh -p$destinationPORT" /home/dbdumps root@$destinationIP:/home/
 }
 
 restore_dbs () {
         menu_prep
         export text1="Starting a restore of the databases ..."
         submenu
+	# This needs to go into a script that gets copied over and run in the screen session
         ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
-cd /home/dbdumps
 test -d /home/prefinalsyncdbs && mv /home/prefinalsyncdbs{,.`date +%F`.bak}
 mkdir /home/prefinalsyncdbs
-screen -S "restore_dbs" -d -m `for each in *.sql;do echo ${each%.*};mysqldump ${each%.*} > /home/prefinalsyncdbs/$each;mysql ${each%.*} < /home/dbdumps/$each;done`
+screen -S "restore_dbs" -d -m `cd /home/dbdumps;for each in *.sql;do echo ${each%.*};mysqldump ${each%.*} > /home/prefinalsyncdbs/$each;mysql ${each%.*} < /home/dbdumps/$each;done`
 exit
 EOF
 }
@@ -73,6 +73,7 @@ exit
 EOF
 	echo
 	echo "Databases restored."
+	sleep 2
 }
 
 forward () {
@@ -92,10 +93,10 @@ remove_dumps () {
 	menu_prep
 	export text1="Removing Mysql dumps ..."
 	submenu
-	rm -f /home/dbdumps/*
+	rm -f /home/dbdumps/*.sql
 	rmdir /home/dbdumps
 ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
-rm -f /home/dbdumps/*
+rm -f /home/dbdumps/*.sql
 rmdir /home/dbdumps
 EOF
 }
