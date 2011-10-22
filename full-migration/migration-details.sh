@@ -3,9 +3,15 @@
 # It is the first script run from there as part of a full migration
 
 path=`pwd`
+
+# Menu functions
 menu_prep () {
         for each in text{1..6};do unset $each;done
         clear
+}
+submenu () {
+        $path/full-migration/menu_templates/submenu.sh
+        sleep 2
 }
 
 # Clear flat files written to in this script
@@ -20,7 +26,7 @@ cat /dev/null > $path/full-migration/destinationIPtest
 	export text2="1) Source Server IP Address"
 	export text3="2) Source Server SSH Port"             
 	export text4="3) Source Server Root Password"
-	$path/full-migration/menu_templates/submenu.sh
+	submenu
 
 # Gather migration information for source server
 sourceserverinfo () {
@@ -101,7 +107,7 @@ sleep 2
 	export text2="1) Destination Server IP Address"
 	export text3="2) Destination Server SSH Port"
 	export text4="3) Destination Server Root Password"
-	$path/full-migration/menu_templates/submenu.sh
+	submenu
 
 # Migration information for destination server 
 destinationserverinfo () {
