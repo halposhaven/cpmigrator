@@ -16,7 +16,9 @@ submenu () {
 }
 
 # Inform admin of current status
+menu_prep
 export text1="Starting Initial Migration Process from $location ..."
+submenu
 
 # Based on location set by server-locations.sh,
 # run appropriate initial migration script
