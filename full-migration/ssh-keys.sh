@@ -1,20 +1,12 @@
 #!/bin/bash
 # This script is initiated from init.sh
 # This is the 3rd script to run for a full migration, after migration-details.sh and server-locations.sh
-clear
-# Set path and read location
-path=`pwd`
-location=$(cat $path/full-migration/location)
 
-# Menu functions
-menu_prep () {
-        for each in text{1..6};do unset $each;done
-        clear
-}
-submenu () {
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
-}
+# Includes
+source includes.sh
+
+# Set location
+location=$(cat $path/full-migration/location)
 
 # Based on location set by server-locations.sh, 
 # runs appropriate script(s) to setup ssh keys

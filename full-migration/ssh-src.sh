@@ -5,27 +5,14 @@
 # server-locations.sh. Also, it is possible that workstations will not recognize
 # the "expect" command. May have to define it, or include it with the package
 
-
-clear
-
-# Set Path
-path=`pwd`
+# Includes
+source includes.sh
 
 # Set Variables
 sourceIP=$(cat $path/full-migration/source-files/sourceIP)
 sourceUSER=$(cat $path/full-migration/source-files/sourceUSER)
 sourcePASS=$(cat $path/full-migration/source-files/sourcePASS)
 sourcePORT=$(cat $path/full-migration/source-files/sourcePORT)
-
-# Menu functions
-menu_prep () {
-        for each in text{1..6};do unset $each;done
-        clear
-}
-submenu () {
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
-}
 
 # SSH Keys Setup
 # Credit goes to ehowe for this

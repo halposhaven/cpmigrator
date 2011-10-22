@@ -1,29 +1,12 @@
 #!/bin/bash
 # This script is initiated from init.sh
 # This is the second script to run for a full migration, right after migration-details.sh
-clear
-
-# Set Path
-path=`pwd`
 
 # Clear potentially full flat file
 [ -f $path/full-migration/workstation-check/workstation ] && cat /dev/null > $path/full-migration/workstation-check/workstation
 
-# Functions for menu calls
-menu_prep () {
-        for each in text{1..6};do unset $each;done
-        clear
-}
-submenu () {
-	$path/full-migration/menu_templates/submenu.sh
-	echo
-	sleep 2
-}
-
-# Function for location clear
-location_clear () {
-	cat /dev/null > $path/full-migration/location
-}
+# Includes
+source includes.sh
 
 # Inform user of current status
 menu_prep

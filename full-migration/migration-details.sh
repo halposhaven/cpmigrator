@@ -2,17 +2,8 @@
 # This script is initiated from init.sh
 # It is the first script run from there as part of a full migration
 
-path=`pwd`
-
-# Menu functions
-menu_prep () {
-        for each in text{1..6};do unset $each;done
-        clear
-}
-submenu () {
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
-}
+# Includes
+source includes.sh
 
 # Clear flat files written to in this script
 for each in `\ls -A1 $path/full-migration/source-files|grep source`; do cat /dev/null > $path/full-migration/source-files/$each;done

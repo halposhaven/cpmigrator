@@ -1,18 +1,14 @@
 #!/bin/bash
 
-unalias ls 2> /dev/null
-path=`pwd`
-menu_prep () {
-	for each in text{1..6};do unset $each;done
-	clear
-}
+# Includes
+source includes.sh
 
 # This script needs to be run as a root user. This is a check to make sure of that.
 if [[ $EUID -ne 0 ]]; then
 	menu_prep
 	export text1="This script must be run as the root user. Please switch to the root user,"
 	export text2="and then restart this script."
-	$path/full-migration/menu_templates/submenu.sh
+	submenu
 	exit 0
 fi
 
@@ -25,8 +21,8 @@ if [[ -z $expect_workstation ]] && [[ -z $expect_centos ]]; then
 	menu_prep
 	export text1="This script requires the use of the 'expect' package. Please install before"
 	export text2="continuing forward."
-	$path/full-migration/menu_templates/submenu.sh
-        exit 0
+        submenu
+	exit 0
 fi 
 
 menuoptions () {
@@ -37,7 +33,7 @@ menuoptions () {
 	export text4="3) Single Account Migration (Shared To Shared, Shared To VPS/Dedicated/Storm) (Not available)"
 	export text5="4) Resume A Migration That Was Already Started (Not available)"
 	export text6="0) Quit"
-	$path/full-migration/menu_templates/submenu.sh
+	submenu
 }
 
 # Prompt the admin with the migration options

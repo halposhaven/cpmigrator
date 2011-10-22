@@ -1,17 +1,8 @@
 #!/bin/bash
 # Initiated from starter.sh
 
-path=`pwd`
-
-# Menu functions
-menu_prep () {
-        for each in text{1..6};do unset $each;done
-        clear
-}
-submenu () {
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
-}
+# Includes
+source includes.sh
 
 # Set destination server variables
 destinationIP=$(cat $path/full-migration/destination-files/destinationIP)
