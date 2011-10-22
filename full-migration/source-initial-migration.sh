@@ -2,9 +2,15 @@
 # Initiated from starter.sh
 
 path=`pwd`
+
+# Menu functions
 menu_prep () {
         for each in text{1..6};do unset $each;done
         clear
+}
+submenu () {
+        $path/full-migration/menu_templates/submenu.sh
+        sleep 2
 }
 
 # Set destination server variables
@@ -20,8 +26,7 @@ system_info () {
 	export text2="Begin System Information ..."
 	export text3="The following information will also be logged to:"
 	export text4="$path/full-migration/system_info_start"
-	$path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	echo "You are connected as the user: $USER " 
 	echo
 	echo "Today's date is `date`, this is week `date +"%V"`."
@@ -59,8 +64,7 @@ preliminary () {
 	export text3="-Cpanel User Accounts On the Destination Server"
 	export text4="-Available IPs. Are There Enough On the Destination Server To Match Setups?"
 	export text5="-Nameservers. Have They Been Setup? If Not, They Will Be Created."
-	$path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	echo "Running Checks ..."
 	sleep 2
 	# Check for existing users on remote server
@@ -78,8 +82,7 @@ preliminary () {
 			        menu_prep
         			export text1="################## Initial Migration To Destination Server ###################"
         			export text2="ATTENTION: The following accounts already exist on the target server."
-        			$path/full-migration/menu_templates/submenu.sh
-				sleep 2
+				submenu
 				echo "Account Name Conflicts:"
 				echo
 				cat $path/full-migration/preliminary/user_conflicts
@@ -111,8 +114,7 @@ preliminary () {
 				menu_prep
                                 export text1="################## Initial Migration To Destination Server ###################"
                                 export text2="ATTENTION: The following domains already exist on the target server."
-                                $path/full-migration/menu_templates/submenu.sh
-				sleep 2
+				submenu
 				echo "Domain and Subdomain Conflicts:"
 				echo
 				cat $path/full-migration/preliminary/domain_conflicts
@@ -124,8 +126,7 @@ preliminary () {
 		menu_prep
                 export text1="################## Initial Migration To Destination Server ###################"
                 export text2="ATTENTION: The target server is in use, and the following accounts are setup."
-                $path/full-migration/menu_templates/submenu.sh
-                sleep 2
+                submenu
 		echo "Accounts on Target Server:"
 		echo
 		cat $path/full-migration/preliminary/users
@@ -157,8 +158,7 @@ preliminary () {
 		menu_prep
                 export text1="################## Initial Migration To Destination Server ###################"
                 export text2="ATTENTION: The target server does not have enough IPs for accounts with dedicated IPs."
-                $path/full-migration/menu_templates/submenu.sh
-		sleep 2
+		submenu
 		echo "$add_ips IP(s) need to be added to the target server in order to match configurations"
 		echo
 		echo "Please go ahead and add IPs to the target server. If you would like to instead"
@@ -186,8 +186,7 @@ preliminary () {
 		menu_prep
                 export text1="################## Initial Migration To Destination Server ###################"
                 export text2="The target server has enough IPs to keep the current IP configuration."
-                $path/full-migration/menu_templates/submenu.sh
-                sleep 2
+                submenu
 	fi
 	# This also needs to take nameservers into account	
 	# Check to make sure there is enough space for the migration (still under development)
@@ -201,8 +200,7 @@ ttls () {
         menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Now Lowering TTLs ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	#check current TTLs and serial number
 	grep --color -e '^\$TTL.*' -e '[0-9]\{10\}' /var/named/*.db   # this [0-9]\{10\}  will be the serial number, 10 numbers in a row
  	#make sure date works
@@ -223,8 +221,7 @@ nameservers () {
         menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Checking For Remote Nameservers ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	[ -f $path/remote_dns ] && cat /dev/null > $path/remote_dns
 	counter=1
 	for ns in `cat /etc/nameserverips|cut -d '=' -f2`;do
@@ -252,8 +249,7 @@ nameservers () {
 	        menu_prep
         	export text1="################## Initial Migration To Destination Server ###################"
         	export text2="The Following Domains Are Using Remote Nameservers:"
-        	$path/full-migration/menu_templates/submenu.sh
-        	sleep 2
+        	submenu
 		for each in `cat $path/full-migration/remote_dns`;do 
 			echo "Whois information for $each"
 			whois $each|grep "Name Server:"|tr -d [:blank:]
@@ -278,8 +274,7 @@ rsync_update () {
 	menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Updating Rsync ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
         LOCALCENT=`cat /etc/redhat-release|awk '{print $3}'|cut -d '.' -f1`
         REMOTECENT=`ssh -p$destinationPORT $destinationUSER@$destinationIP "cat /etc/redhat-release"|awk '{print $3}'|cut -d '.' -f1`
         LOCALARCH=`uname -i`
@@ -311,8 +306,7 @@ match () {
         menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Matching EA Config, Cpanel Packages and Features ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+	submenu
 	#EA config, Cpanel packages, Cpanel features
 	rsync -avHl -e "ssh -p$destinationPORT" /var/cpanel/easy/apache/ $destinationUSER@$destinationIP:/var/cpanel/easy/apache/
 	rsync -avHl -e "ssh -p$destinationPORT" /var/cpanel/packages/ $destinationUSER@$destinationIP:/var/cpanel/packages/
@@ -342,8 +336,7 @@ package () {
         menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Packaging Accounts ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	# Move any existing cpmove files in /home out of the way
 	if [[ -f /home/cpmove-*.tar ]]; then
 		mkdir /home/old-cpmove
@@ -396,8 +389,7 @@ copy () {
         menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Copying Cpmove Files to Destination Server ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	rsync -avHl -e "ssh -p $destinationPORT" /home/cpmove-*.tar $destinationUSER@$destinationIP:/home/ --progress 2>&1|tee $path/full-migration/scripts/logs/cpmove.log
 	echo
 	echo
@@ -411,8 +403,7 @@ easyapache () {
         menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Checking to See If EA is Finished on Destination Server ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	rsync -avHl -e "ssh -p $destinationPORT" $path/full-migration/scripts/easy_watcher.sh $destinationUSER@$destinationIP:/home/temp/ --progress	
 	ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
 /home/temp/easy-watcher.sh
@@ -433,8 +424,7 @@ restore () {
         menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Restoring Cpmove Files on Destination Server ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	# Copies over the scripts required to run the restore and watch it
 	rsync -avHlq -e "ssh -p $destinationPORT" $path/full-migration/scripts/restore-accounts.sh $destinationUSER@$destinationIP:/home/temp/
 	rsync -avHlq -e "ssh -p $destinationPORT" $path/full-migration/scripts/restore-watcher.sh $destinationUSER@$destinationIP:/home/temp/
@@ -456,8 +446,7 @@ homedirs () {
         menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Copying Over Home Directories ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	# No conflicts, rsync all homedirs
 	if [[ -z $path/full-migration/preliminary/user_conflicts ]]; then
 		for each in `\ls -A /var/cpanel/users`;do rsync -avHl -e "ssh -p $destinationPORT" /home/$each/ $destinationUSER@$destinationIP:/home/$each/ --progress;done
@@ -485,8 +474,7 @@ testing () {
         menu_prep
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Preparing Destination Server For Testing Phase ..."
-        $path/full-migration/menu_templates/submenu.sh
-        sleep 2
+        submenu
 	# Copy over testing phase script
 	rsync -avHlq -e "ssh -p$destinationPORT" $path/full-migration/scripts/testing-phase.sh $destinationUSER@$destinationIP:/home/temp/
 	ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
