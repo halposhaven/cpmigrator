@@ -24,43 +24,51 @@ sourceserverinfo () {
         SUBLOOP=0
         while [ $SUBLOOP -eq 0 ];
         do
-		# Grabs source IP
-                if [ -z $sourceIP ]; then
-                	echo -n "Source Server IP Address: "
-                	read sourceIP
-                fi
-                SUBLOOP=1
-                # IP is required
-		# This needs more work. If the IP address is invalid, it needs to prompt for a new one
-		# instead of just continuing on
-		# * Needs to go into its own while loop
-                if [ -z $sourceIP ]; then
-			echo ""
-                        echo "IP Address Is Required! Please Enter A Valid IP Address."
-			echo ""
-                        sleep 1
-                        SUBLOOP=0
-                else
-			echo $sourceIP >> $path/full-migration/sourceIPtest
-                        $path/full-migration/validip-src.sh
-                fi
-                # Set user to root
+		IPLOOP=0
+		while [ $IPLOOP == 0 ];
+		do
+			echo -n "Source Server IP Adress: "
+			read sourceIP
+			if [ -z $sourceIP ]; then
+                		echo
+				echo "IP Address is Required!"
+				echo
+				sleep 1
+			else
+				cat /dev/null > $path/full-migration/sourceIPtest
+				cat /dev/null > $path/full-migration/preliminary/validip-src
+				echo $sourceIP >> $path/full-migration/sourceIPtest
+				$path/full-migration/validip-src.sh
+				IPCHECKSRC=$(cat $path/full-migration/preliminary/validip-src)
+				if [ "$IPCHECKSRC" != "1" ]; then
+					echo
+					echo "IP is invalid. Please enter a valid IP address."
+					echo
+				else
+					echo
+					echo "IP is valid."
+					echo
+					IPLOOP=1
+				fi
+			fi
+		done
+			
+		# Set user to root
 			sourceUSER=root
                 #Get SSH Port
                 if [ -z $sourcePORT ]; then
                         echo -n "Source Server SSH Port [22]: "
                         read sourcePORT
 			SUBLOOP=1
-                fi
-                # Assign port 22 if no value was assigned
-                if [ -z $sourcePORT ]; then
-			echo ""
-                        echo "No Port Given, Assuming Port 22."
-                        sleep 1
-                        sourcePORT=22
-			#SUBLOOP=1
-                fi
+                	if [ -z $sourcePORT ]; then
+				echo ""
+                        	echo "No Port Given, Assuming Port 22."
+                        	sourcePORT=22
+				sleep 1
+                	fi
+		fi
                 # Get Source Server password
+		# Need to enclose this in a while loop as well
                 if [ -z $sourcePASS ]; then
 			echo ""
                         echo -n "Source Server Password: "
