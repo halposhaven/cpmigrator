@@ -20,16 +20,12 @@ validip () {
         done
 
         if [ "$valid" -a "$count" -eq 4 ]; then
-        	echo "Valid IP Address!"
-		echo
+		echo "1" >> $path/full-migration/preliminary/validip-src
 	else
-		echo "Invalid IP Address!"
-		echo
-		sleep 2
-        SUBLOOP=1
-        fi
+		echo "0" >> $path/full-migration/preliminary/validip-src
+        
+	fi
 }
 
 validip
-
 # Script ends. Returns to migration-details.sh
