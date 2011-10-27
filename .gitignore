@@ -22,6 +22,7 @@ full-migration/preliminary/validip-dest
 full-migration/location
 full-migration/destinationIPtest
 full-migration/sourceIPtest
+full-migration/remote_dns
 full-migration/workstation-check/workstation
 full-migration/scripts/logs/cpmove.log
 full-migration/scripts/logs/pkgacct.log
