@@ -18,8 +18,8 @@ sourcePORT=$(cat $path/full-migration/source-files/sourcePORT)
 # Credit goes to ehowe for this
 
 sshkeys () {
-        if ! [ -f ~/.ssh/id_rsa ]
-        then ssh-keygen -t rsa -q -N "" -V +2w -f ~/.ssh/id_rsa
+        if ! [ -f ~/.ssh/id_rsa ]; then 
+		ssh-keygen -t rsa -q -N "" -V +2w -f ~/.ssh/id_rsa
         fi
 }
 
