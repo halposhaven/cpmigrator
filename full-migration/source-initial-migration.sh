@@ -10,7 +10,7 @@ destinationPASS=$(cat $path/full-migration/destination-files/destinationPASS)
 destinationPORT=$(cat $path/full-migration/destination-files/destinationPORT)
 destinationUSER=$(cat $path/full-migration/destination-files/destinationUSER)
 
-# Provide some basic information about the current status of the server
+# Provide some basic information about the current status of the server. More things should be added here.
 system_info () {
 	menu_prep
 	export text1="################## Initial Migration To Destination Server ###################"
@@ -34,8 +34,8 @@ system_info () {
 	echo "This is the current uptime information:"
 	uptime
 	echo
-	echo "If you see anything amiss here, please feel free to exit this script now.
-	      It can be easily resumed from the main menu."
+	echo "If you see anything amiss here, please feel free to exit this script now."
+	echo "It can be easily resumed from the main menu."
 	echo
 	read -p "Press any key to continue..."
 }
@@ -253,9 +253,11 @@ nameservers () {
         	#cat $path/full-migration/remote_dns
         	echo
 		echo
-        	read -p "Copy this list of domains to the ticket if necessary. 
-                 	 Otherwise, it is available at $path/full-migration/remote_dns . 
-                  	 Press any key to continue..."
+        	echo "Copy this list of domains to the ticket if necessary." 
+                echo "Otherwise, it is available at: "
+		echo "$path/full-migration/remote_dns " 
+		echo
+                read -p "Press any key to continue..."
         	echo
 	fi
 }
@@ -279,7 +281,7 @@ rsync_update () {
 
 # Version checking. This is just an idea section for now, that will need to be written still.
 # May or may not be included with finished version.
-# Needs expanding. Show admin the differences between the two, and also place results in a file.
+# Needs expanding. Show admin the differences between the two servers, and also place results in a file.
 versions () {
 	echo
 	echo "Server Versions"
@@ -395,7 +397,7 @@ easyapache () {
         export text1="################## Initial Migration To Destination Server ###################"
         export text2="Checking to See If EA is Finished on Destination Server ..."
         submenu
-	rsync -avHl -e "ssh -p $destinationPORT" $path/full-migration/scripts/easy_watcher.sh $destinationUSER@$destinationIP:/home/temp/ --progress	
+	rsync -avHl -e "ssh -p $destinationPORT" $path/full-migration/scripts/easy-watcher.sh $destinationUSER@$destinationIP:/home/temp/ --progress	
 	ssh -Tq $destinationUSER@$destinationIP -p$destinationPORT /bin/bash <<EOF
 /home/temp/easy-watcher.sh
 exit
@@ -535,6 +537,7 @@ do
 	    ;;
 	8)
 	    copy
+	    easyapache
 	    ;;
 	9)
 	    restore
