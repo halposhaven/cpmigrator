@@ -14,6 +14,13 @@ destinationUSER=$(cat $path/full-migration/destination-files/destinationUSER)
 destinationPASS=$(cat $path/full-migration/destination-files/destinationPASS)
 destinationPORT=$(cat $path/full-migration/destination-files/destinationPORT)
 
+# Create SSH key
+sshkeys () {
+        if ! [ -f ~/.ssh/id_rsa ]; then 
+		ssh-keygen -t rsa -q -N "" -V +2w -f ~/.ssh/id_rsa
+        fi
+}
+
 # Source Server Login
 destserverlogin () {
         KEY=`cat /root/.ssh/id_rsa.pub`
