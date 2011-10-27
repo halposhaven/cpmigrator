@@ -20,13 +20,9 @@ validip () {
         done
 
         if [ "$valid" -a "$count" -eq 4 ]; then
-        	echo "Valid IP Address!"
-		echo
+		echo "1" >> $path/full-migration/preliminary/validip-dest
 	else
-		echo "Invalid IP Address!"
-		echo
-		sleep 2
-        SUBLOOP=0
+		echo "0" >> $path/full-migration/preliminary/validip-dest
         fi
 }
 
