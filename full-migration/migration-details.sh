@@ -33,7 +33,6 @@ sourceserverinfo () {
                 		echo
 				echo "IP Address is Required!"
 				echo
-				sleep 1
 			else
 				cat /dev/null > $path/full-migration/sourceIPtest
 				cat /dev/null > $path/full-migration/preliminary/validip-src
@@ -69,23 +68,28 @@ sourceserverinfo () {
 		fi
                 # Get Source Server password
 		# Need to enclose this in a while loop as well
-                if [ -z $sourcePASS ]; then
-			echo ""
-                        echo -n "Source Server Password: "
-                        read sourcePASS
-                        SUBLOOP=1
-                fi
-                # Password is required
-                if [ -z $sourcePASS ]; then
-			echo ""
-                        echo "Source Password Required!"
-			echo ""
-                        SUBLOOP=0
-                fi
+		PASSWORDLOOP=0
+		while [ $PASSWORDLOOP == 0 ];
+		do
+                	if [ -z $sourcePASS ]; then
+				echo ""
+                        	echo -n "Source Server Password: "
+                        	read sourcePASS
+                		# Password is required
+                		if [ -z $sourcePASS ]; then
+					echo
+                        		echo "Source password required! Please enter a password."
+					echo
+				else
+					PASSWORDLOOP=1
+					SUBLOOP=1
+				fi
+                	fi
+		done
         done
 }
 
-# Run script for source server
+# Run function for source server
 sourceserverinfo
 
 # Copy source server variables to flat files
@@ -113,55 +117,67 @@ destinationserverinfo () {
         SUBLOOP=0
         while [ $SUBLOOP -eq 0 ];
         do
-		# Get destination server IP
-                if [ -z $destinationIP ]; then
-                	echo -n "Destination Server IP Address: "
-                	read destinationIP
-                fi
-                SUBLOOP=1
-                # IP is required
-                if [ -z $destinationIP ]; then
-                        echo ""
-                        echo "IP Address Is Required! Please Enter A Valid IP Address."
-                        echo ""
-                        sleep 1
-                        SUBLOOP=0
-                        destinationserverinfo
-                else
-                        echo $destinationIP >> $path/full-migration/destinationIPtest
-                        $path/full-migration/validip-dest.sh
-                fi
+		IPLOOP=0
+		while [ $IPLOOP == 0 ];
+		do
+			echo -n "Destination Server IP Address: "
+			read destinationIP
+			if [ -z $destinationIP ]; then
+				echo
+				echo "IP address is required! Please enter an IP address."
+				echo
+			else
+				cat /dev/null > $path/full-migration/destinationIPtest
+				cat /dev/null > $path/full-migration/preliminary/validip-dest
+				echo $destinationIP >> $path/full-migration/destinationIPtest
+				$path/full-migration/validip-dest.sh
+				IPCHECKDEST=$(cat $path/full-migration/preliminary/validip-dest)
+				if [ "$IPCHECKDEST" != "1" ]; then
+					echo
+					echo "IP is invalid. Please enter a valid IP address."
+					echo
+				else
+					echo
+					echo "IP is valid."
+					echo
+					IPLOOP=1
+				fi
+			fi
+		done
                 # Set user to root
                         destinationUSER=root
                 #Get SSH Port
                 if [ -z $destinationPORT ]; then
                         echo -n "Destination Server SSH Port [22]: "
                         read destinationPORT
-			SUBLOOP=1
-			
+                        SUBLOOP=1       
+                        # Assign port 22 if no value was assigned
+                        if [ -z $destinationPORT ]; then
+                                echo ""
+                                echo "No Port Given, Assuming Port 22."
+                                sleep 1
+                                destinationPORT=22
+                        fi
                 fi
-                # Assign port 22 if no value was assigned
-                if [ -z $destinationPORT ]; then
-                        echo ""
-                        echo "No Port Given, Assuming Port 22."
-                        sleep 1
-                        destinationPORT=22
-			#SUBLOOP=1
-                fi
-                # Get Destination Server password
-                if [ -z $destinationPASS ]; then
-			echo ""
-                        echo -n "Source Server Password: "
-                        read destinationPASS
-                        SUBLOOP=1
-                fi
-                #Password is required
-                if [ -z $destinationPASS ]; then
-                        echo ""
-                        echo "Destination Password Required!"
-                        echo ""
-                        SUBLOOP=0
-                fi
+		# Get destination server password
+		PASSWORDLOOP=0
+		while [ $PASSWORDLOOP == 0 ];
+		do
+			if [ -z $destinationPASS ]; then
+				echo
+				echo -n "Destination Server Password: "
+				read destinationPASS
+				# Password is required
+				if [ -z $destinationPASS ]; then
+					echo
+					echo "Source password required! Please enter a password."
+					echo
+				else
+					PASSWORDLOOP=1
+					SUBLOOP=1
+				fi
+			fi
+		done
         done
 }
 
