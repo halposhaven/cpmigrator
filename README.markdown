@@ -2,43 +2,33 @@
 
 _Info: This script is currently under development, so it is not quite ready for prime time. Updates will be made here as it progresses._
 
-## Current or Intended Abilities
+## How to install
+
+If you have git, then this can be accomplished using:
+
+ git clone git@github.com:jerius/cpmigrator.git
+
+_Info: As of right now, for testing, this should be put on the source server, or server you are using to test with. Right now it can only migrate from the source server to the destination server. Soon this will be placed in a tar ball that can be downloaded._
+
+If you don't have git, the install can be grabbed from:
+
+http://git-scm.com/
+
+## How to run
 
 ### Full Migration
 
-This is the first, and primary function of the script; to handle full migrations with root SSH access. As of right now, it does or will do the following.
+_Info: This is the only one finished at this point. The other migration types will be finished as soon as possible.
 
-1. Asks for and stores IP addresses, ports, and passwords for both the source and destination servers.
+ bash init.sh
 
-2. Determines where the script is being run from. (source, destination, workstation, or other) Once this determination is made, the script will configure itself to run from that location.
+Here you will be presented with some options, but only "Full migration" is available at this time.
 
-3. SSH keys are automatically setup.
+From there it will walk you through the various steps of the migration.
 
-    * Steps 4-14 are optional, so the migration can be run in a variety of configuration, as is often necessary. 
+_Info: Still working on getting this fully documented._
 
-4. Displays basic information about both server environments.
-
-5. Does preliminary checks for existing cpanel accounts and domains on the destination server (if found, looks for conflicts), available IPs (makes sure there are enough for dedicated IPs on source server), and nameservers. This information is displayed, and the tech can choose to continue once changes are made, or override and continue anyways.
-
-6. Lowers TTLs
-
-7. Checks for use of remote nameservers.
-
-8. Updates rsync.
-
-9. Matches Easy Apache configurations, and copies over cPanel packages and features.
-
-10. Packages accounts.
-
-11. Copies packages accounts to the destination server.
-
-12. Checks to verify the Easy Apache has finished running on the destination server, and then restores the accounts.
-
-13. Rsyncs the home directories from the source server to the destination server.
-
-14. Prepares the destination server for testing by providing links the customer can access for hosts file modification and testing.
-
-_After this point it will wait until it is prompted to complete the final sync, which does a standard final sync, and can setup DNS to forward from the source server to the destination server._
+If you do run into any problems with it, please submit them to https://github.com/jerius/cpmigrator/issues . Alternatively, you can fix the code and submit a pull request to the Github repo.
 
 ### Partial Migration
 
