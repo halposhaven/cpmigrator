@@ -501,7 +501,7 @@ cmd=(dialog --separate-output --checklist "Select Migration Options:" 22 76 16)
 options=(1 "System Information" off    # any option can be set to default to "on"
          2 "Pre-migration Checks" off
 	 3 "Lower TTLs" on
-         4 "Setup Nameservers" on
+         4 "Setup Nameservers" off
          5 "Check Versions" off
 	 6 "Match Easy Apache Configuration" on
 	 7 "Package Accounts" on
